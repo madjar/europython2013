@@ -7,8 +7,8 @@
 Pyramid advanced configuration tactics for nice apps and libs
 =============================================================
 
-Georges Dubus
--------------
+Europython 2013
+---------------
 
 .. Default x increment : 1600
 
@@ -82,6 +82,15 @@ Web framework
 
    Here are the keywords from pyramid introduction
 
+..
+   ----
+
+   Why I like pyramid
+   ------------------
+
+   - Let me use SQLAlchemy
+   - Provide two ways to map url to views : dispatch and traversal, and traversal is neat.
+
 ----
 
 Hello World
@@ -91,7 +100,7 @@ Hello World
 .. code:: python
 
    def hello_world(request):
-       return Response('Hello world!')
+       return Response('Whoa there!')
 
    if __name__ == '__main__':
        config = Configurator()
@@ -147,6 +156,20 @@ a pending list that is treated on commit.
 
    Everything is resolved when the config is committed. `make_wsgi_app`
    does a commit.
+
+----
+
+Decorators with no import-time effects
+
+.. code:: python
+
+   @view_config(route_name='home')
+   def view(request):
+       return Response('Halt!  Who goes there?')
+
+   config = Configurator()
+   config.add_route('home', '/')
+   config.scan()
 
 ----
 
@@ -500,6 +523,11 @@ Examples of ways to use config in an application or a library.
 
 ----
 
+For your application
+--------------------
+
+----
+
 Using add_directive to simplify the config
 ------------------------------------------
 
@@ -555,7 +583,96 @@ Use venusian decorators, they are detected by config.scan()
 
    @simple_view('/')
    def view(request):
-       return Response('yay')
+       return Response('It is I, Arthur, son of Uther Pendragon, ...')
+
+----
+
+Adding methods to request
+-------------------------
+
+It'd be nice if request.user was the user object for the current user.
+
+.. code:: python
+
+   def get_user(request):
+       id = authenticated_userid(request)
+       if not id:
+           return None
+       return DBSession.query(User).get(id)
+
+
+   config.add_request_method(get_user, 'user', reify=True)
+
+Reified means the method is replaced by the object after the first call.
+
+
+----
+
+Events
+------
+
+Pyramid has an event system.
+
+.. code:: python
+
+   @subscriber(EventClass)
+   def do_stuff(event):
+       pass
+
+- BeforeRender to add globals to the templates
+- NewRequest, NewResponse when a request/response is created
+- ContextFound when traversal is done
+- ApplicationCreated
+
+----
+
+Adding globals to the templates
+-------------------------------
+
+.. code:: python
+
+   @subscriber(BeforeRender)
+   def add_helper(event):
+       from . import helpers
+       event['h'] = helpers
+
+In my template:
+
+.. code:: mako
+
+   ${h.format_date(date)}
+
+
+----
+
+A lot of other things can be changed
+------------------------------------
+
+- How url are generated
+- How view responses are handled
+- How requests are mapped to views
+- Sessions, authentication, renderers
+
+----
+
+Libraries
+---------
+
+.. note::
+
+   All of the above is still usable
+
+----
+
+More globals to templates
+-------------------------
+
+.. code:: python
+
+   @subscriber(BeforeRender)
+   def add_renderer_global(event):
+       event['persona_js'] = get_persona_js(event.request)
+       # persona_js is available in the template
 
 ----
 
@@ -623,75 +740,6 @@ Example in pyramid_layout
 
 ----
 
-Adding methods to request
--------------------------
-
-It'd be nice if request.user was the user object for the current user.
-
-.. code:: python
-
-   def get_user(request):
-       id = authenticated_userid(request)
-       if not id:
-           return None
-       return DBSession.query(User).get(id)
-
-
-   config.add_request_method(get_user, 'user', reify=True)
-
-Reified means the method is replaced by the object after the first call.
-
-----
-
-How to handle global stuff : registry
--------------------------------------
-
-The registry is available as config.registry and request.registry.
-
-Can be used to store global stuff (database connections, etc).
-
-.. ::
-
-   Bonus points : ZCA
-   TODO, après avoir testé la durée de la présentation.
-
-----
-
-Events
-------
-
-Pyramid has an event system.
-
-.. code:: python
-
-   @subscriber(EventClass)
-   def do_stuff(event):
-       pass
-
-- BeforeRender to add globals to the templates
-- NewRequest, NewReponse when a request/response is created
-- ContextFound when traversal is done
-- ApplicationCreated
-
-----
-
-Adding globals to the templates
--------------------------------
-
-.. code:: python
-
-   @subscriber(BeforeRender)
-   def add_renderer_global(event):
-       event['persona_js'] = get_persona_js(event.request)
-       # persona_js is available in the template
-
-   @subscriber(BeforeRender)
-   def add_helper(event):
-       from . import helpers
-       event['h'] = helpers
-
-----
-
 Tweens
 ------
 
@@ -702,13 +750,23 @@ the application.
 
 ----
 
-A lot of other things can be changed
-------------------------------------
+How to handle global stuff
+--------------------------
 
-- How url are generated
-- How view responses are handled
-- How requests are mapped to views
-- Sessions, authentication, renderers
+Global stuff like database connections, ...
+
+- registry (config.registry and request.registry)
+- in the settings dict
+
+.. note::
+
+   Two clans
+
+.. ::
+
+   Bonus points : ZCA
+   TODO, après avoir testé la durée de la présentation.
+
 
 ----
 
@@ -733,11 +791,14 @@ Example : cornice
 
 ----
 
-config.add_cornice_service
+- config.add_cornice_service
 
-venusian callback attached to Service, so service is caught by config.scan
+- venusian callback attached to Service, so service is caught by config.scan
 
 ----
+
+Conclusion
+----------
 
 .. note::
 
@@ -767,3 +828,5 @@ Thanks
 ------
 
 @georgesdubus
+
+madjar.github.io/europython2013
