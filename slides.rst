@@ -24,48 +24,6 @@ Quick question
 
 ----
 
-Once upon a time ...
-
-Persona is the awesome web authentication system by Mozilla that will
-save us all.
-
-.. image:: persona_sign_in_blue.png
-
-Using it requires to add some javascript to your page and
-to implement a few stuff on server side.
-
-I included it in a few apps
-
-Then, I made a library to do that in Pyramid : pyramid_persona.
-
-.. note::
-   
-   Holger talked about it.
-
-----
-
-What I'm going to talk about
-----------------------------
-
-- The configuration system of Pyramid
-- How to use it to make libraries, and nicely organized applications
-
-.. note::
-
-   The result is a nice, easy to use library, because pyramid is
-   well-designed for extensions
-
-   There was a few non-trivial stuff, and a some of research involved.
-
-   2 parts
-
-   - In the first, I'll introduce you to the configuration system so
-     you get an idea of what we are dealing with.
-   - In the second part, I'll show how to use it for extensions and
-     organizing apps.
-
-----
-
 What's pyramid again ?
 ----------------------
 
@@ -90,6 +48,48 @@ Web framework
 
    - Let me use SQLAlchemy
    - Provide two ways to map url to views : dispatch and traversal, and traversal is neat.
+
+----
+
+Once upon a time ...
+
+Persona is the awesome web authentication system by Mozilla that will
+save us all.
+
+.. image:: persona_sign_in_blue.png
+
+Using it requires to add some javascript to your page and
+to implement a few stuff on server side.
+
+I included it in a few apps
+
+Then, I made a library to do that in Pyramid : pyramid_persona.
+
+.. note::
+   
+   Holger talked about it.
+
+----
+
+What I'm going to talk about
+----------------------------
+
+- The extensible configuration  system of Pyramid
+- How to use it to make libraries, and nicely organized applications
+
+.. note::
+
+   The result is a nice, easy to use library, because pyramid is
+   well-designed for extensions
+
+   There was a few non-trivial stuff, and a some of research involved.
+
+   2 parts
+
+   - In the first, I'll introduce you to the configuration system so
+     you get an idea of what we are dealing with.
+   - In the second part, I'll show how to use it for extensions and
+     organizing apps.
 
 ----
 
@@ -380,8 +380,8 @@ Also equivalent to
 python package + includeme function = pyramid extension
 -------------------------------------------------------
 
-- Libraries can do everything that is possible in pyramid
-- Libraries can set default that can be overriden
+- Extensions can do everything that is possible in pyramid
+- Extensions can set default that can be overriden
 
 ----
 
@@ -511,15 +511,6 @@ So, what can I do with all this ?
 Tips, examples, recipes, ...
 
 For applications and libraries
-
-Examples of ways to use config in an application or a library.
-
-.. ::
-
-
-   TODO : ou alors séparer appli et lib, et mettre un résumé global à la
-   fin de appli (un exemple d'appli avec des petits bouts de config partout)
-
 
 ----
 
@@ -805,8 +796,7 @@ Conclusion
    That's it.
 
    Pyramid is really customizatible. If one day, you need something
-   that doesn't fit the django way, think about this, and come back to
-   find the pointers that are here.
+   that doesn't fit the django way, think about this.
 
 ----
 
